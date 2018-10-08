@@ -1,0 +1,4 @@
+{
+  "extends": ["plugin:flowtype/recommended"],
+  "plugins": ["flowtype"]
+}
