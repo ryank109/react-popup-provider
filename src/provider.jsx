@@ -47,19 +47,17 @@ class PopupProvider extends PureComponent<PopupProps, ProviderValue> {
     this.getOpenPopupHandler = (id) => () => {
       const state = this.state.popupStateMap[id];
       if (!state) {
-        let clientRect;
         let scrollableParents;
         const contextRef = this.contextRefMap[id];
         const elem = contextRef && contextRef.current;
         if (elem) {
-          clientRect = elem.getBoundingClientRect();
           scrollableParents = getAllScrollableParents(elem);
         }
         this.setState(({ popupStateMap }) => ({
           popupStateMap: {
             ...popupStateMap,
             [id]: {
-              clientRect,
+              contextRef: elem,
               scrollableParents,
             },
           },

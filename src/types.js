@@ -7,7 +7,7 @@ export type ProviderValue = {
   getOpenPopupHandler: string => () => void,
   popupStateMap: {
     [string]: {
-      clientRect?: ClientRect,
+      contextRef?: Element,
       scrollableParents?: Array<Element>,
     },
   },
@@ -21,18 +21,21 @@ export type PopupContainerArgs = {
 
 export type PopupContainerProps = {
   anchor: Anchor,
+  as: React$ElementType,
   children: PopupContainerArgs => React$Node,
   className?: string,
-  clientRect?: ClientRect,
+  contextRef?: Element,
   closePopup: () => void,
+  id?: string,
   offset: number,
   scrollableParents: Array<Element>,
   style?: { [string]: any },
+  willBePreMounted: boolean,
 };
 
 export type PopupDefArgs = {
   closePopup: () => void,
-  contextClientRect?: ClientRect,
+  contextRef?: Element,
   isOpen: boolean,
   scrollableParents: Array<Element>,
 };
@@ -59,7 +62,6 @@ export type PopupProps = {
     PopupContainerArgs => React$Node,
   ],
   className?: string,
-  id?: string,
   offset: number,
   style?: { [string]: any },
 };
@@ -83,10 +85,13 @@ export type ModalContainerArgs = {
 };
 
 export type ModalContainerProps = {
+  as: React$ElementType,
   children: ModalContainerArgs => React$Node,
   className?: string,
   closeModal: () => void,
+  id?: string,
   style?: { [string]: any },
+  willBePreMounted: boolean,
 };
 
 export type ModalDefProps = {
@@ -100,6 +105,5 @@ export type ModalProps = {
     ModalContainerArgs => React$Node,
   ],
   className?: string,
-  id?: string,
   style?: { [string]: any },
 };

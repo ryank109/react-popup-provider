@@ -3,7 +3,12 @@ import React, { Fragment, PureComponent } from 'react';
 import { createPortal } from 'react-dom';
 import { ModalContext } from './context';
 import { Consumer } from './provider';
-import { getPopupPosition } from './utils';
+import {
+  getPopupPosition,
+  getRandomId,
+  hasBeenPreMounted,
+  togglePreMountedFlag,
+} from './utils';
 
 import type {
   Anchor,
@@ -20,8 +25,14 @@ type ModalContainerState = {
 };
 
 export class ModalContainer extends PureComponent<ModalContainerProps, ModalContainerState> {
+  static defaultProps: {
+    as: 'div',
+    willBePreMounted: false,
+  };
+
   parentEl: HTMLElement;
   el: ?HTMLElement;
+  setRef: Function;
   updatePosition: Function;
 
   constructor(props: ModalContainerProps) {
@@ -31,7 +42,9 @@ export class ModalContainer extends PureComponent<ModalContainerProps, ModalCont
       top: 0,
     };
     this.parentEl = document.createElement('div');
-
+    this.setRef = el => {
+      this.el = el;
+    };
     this.updatePosition = () => global.requestAnimationFrame(() => {
       this.computeAndSetPosition();
     });
@@ -52,35 +65,56 @@ export class ModalContainer extends PureComponent<ModalContainerProps, ModalCont
       document.body.appendChild(this.parentEl);
     }
 
-    this.computeAndSetPosition();
-    global.addEventListener('resize', this.updatePosition);
+    if (this.props.willBePreMounted || hasBeenPreMounted(this.props.id)) {
+      this.computeAndSetPosition();
+      global.addEventListener('resize', this.updatePosition);
+    }
   }
 
   componentWillUnmount() {
-    this.props.closeModal();
     if (document.body) {
       document.body.removeChild(this.parentEl);
     }
-    global.removeEventListener('resize', this.updatePosition);
+
+    if (!this.props.willBePreMounted || hasBeenPreMounted(this.props.id)) {
+      this.props.closeModal();
+      global.removeEventListener('resize', this.updatePosition);
+    }
+
+    if (this.props.willBePreMounted) {
+      togglePreMountedFlag(this.props.id);
+    }
   }
 
   render() {
-    const style = {
+    const {
+      as: Component,
+      children,
+      className,
+      closeModal,
+      style,
+    } = this.props;
+    const containerStyle = {
       position: 'fixed',
       ...this.state,
-      ...this.props.style,
+      ...style,
     };
     return createPortal(
-      <div
-        className={this.props.className}
-        ref={ el => { this.el = el; }}
-        style={style}
+      <Component
+        className={className}
+        ref={this.setRef}
+        style={containerStyle}
       >
-        {this.props.children({ closeModal: this.props.closeModal })}
-      </div>,
+        {children({ closeModal })}
+      </Component>,
       this.parentEl,
     );
   }
+};
+
+ModalContainer.defaultProps = {
+  as: 'div',
+  willBePreMounted: false,
 };
 
 export const ModalDef = (props: ModalDefProps) => (
@@ -100,7 +134,7 @@ export class Modal extends PureComponent<ModalProps> {
 
   constructor(props: ModalProps) {
     super(props);
-    this.id = props.id || Math.random().toString(36).substr(2);
+    this.id = getRandomId();
   }
 
   render() {

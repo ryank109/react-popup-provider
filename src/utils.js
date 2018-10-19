@@ -1,6 +1,20 @@
 // @flow
 import type { Anchor } from './types';
 
+const preMountedMap: { [any]: boolean } = {};
+
+export function hasBeenPreMounted(container: any) {
+  return preMountedMap[container];
+}
+
+export function togglePreMountedFlag(container: any) {
+  if (!preMountedMap.hasOwnProperty(container)) {
+    preMountedMap[container] = true;
+  } else {
+    delete preMountedMap[container];
+  }
+}
+
 export function getOffsetPosition(
   position: number,
   offset: number,
@@ -112,4 +126,10 @@ export function getAllScrollableParents(fromElem: Element): Array<Element> {
     }
   }
   return scrollableParents;
+}
+
+export function getRandomId(): string {
+  return process.env.NODE_ENV === 'test'
+    ? 'test_id'
+    : Math.random().toString(36).substr(2);
 }
