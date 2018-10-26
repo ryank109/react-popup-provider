@@ -1,10 +1,18 @@
 // @flow
 export type Anchor = 'bottom' | 'left' | 'right' | 'top';
 
+type GenericFunc = () => void;
+
+export type CloseModal = GenericFunc;
+export type ClosePopup = GenericFunc;
+export type OpenModal = GenericFunc;
+export type OpenPopup = GenericFunc;
+export type ContextRef = { current: null | React$ElementRef<any> };
+
 export type ProviderValue = {
-  createContextRef: string => { current: null | React$ElementRef<any> },
-  getClosePopupHandler: string => () => void,
-  getOpenPopupHandler: string => () => void,
+  createContextRef: string => ContextRef,
+  getClosePopupHandler: string => ClosePopup,
+  getOpenPopupHandler: string => OpenPopup,
   popupStateMap: {
     [string]: {
       contextRef?: Element,
@@ -15,7 +23,7 @@ export type ProviderValue = {
 };
 
 export type PopupContainerArgs = {
-  closePopup: () => void,
+  closePopup: ClosePopup,
   contextClientRect?: ClientRect,
 };
 
@@ -25,7 +33,7 @@ export type PopupContainerProps = {
   children: PopupContainerArgs => React$Node,
   className?: string,
   contextRef?: Element,
-  closePopup: () => void,
+  closePopup: ClosePopup,
   id?: string,
   offset: number,
   scrollableParents: Array<Element>,
@@ -34,7 +42,7 @@ export type PopupContainerProps = {
 };
 
 export type PopupDefArgs = {
-  closePopup: () => void,
+  closePopup: ClosePopup,
   contextRef?: Element,
   isOpen: boolean,
   scrollableParents: Array<Element>,
@@ -46,8 +54,10 @@ export type PopupDefProps = {
 };
 
 export type PopupContextArgs = {
-  contextRef: { current: null | React$ElementRef<any> },
-  openPopup: () => void,
+  closePopup: ClosePopup,
+  contextRef: ContextRef,
+  isOpen: boolean,
+  openPopup: OpenPopup,
 };
 
 export type PopupContextProps = {
@@ -67,7 +77,9 @@ export type PopupProps = {
 };
 
 export type ModalContextArgs = {
-  openModal: () => void,
+  closeModal: CloseModal,
+  isOpen: boolean,
+  openModal: OpenModal,
 };
 
 export type ModalContextProps = {
@@ -76,19 +88,19 @@ export type ModalContextProps = {
 };
 
 export type ModalDefArgs = {
-  closeModal: () => void,
+  closeModal: CloseModal,
   isOpen: boolean,
 };
 
 export type ModalContainerArgs = {
-  closeModal: () => void,
+  closeModal: CloseModal,
 };
 
 export type ModalContainerProps = {
   as: React$ElementType,
   children: ModalContainerArgs => React$Node,
   className?: string,
-  closeModal: () => void,
+  closeModal: CloseModal,
   id?: string,
   style?: { [string]: any },
   willBePreMounted: boolean,
