@@ -2,6 +2,7 @@
   "name": "react-popup-provider",
   "version": "0.0.3",
   "description": "React popup using context API",
+  "main": "dist/es/index.js",
   "module": "dist/es/index.js",
   "scripts": {
     "build": "rimraf dist/es && flow-copy-source src dist/es && NODE_ENV=es babel src --out-dir dist/es",
