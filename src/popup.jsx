@@ -40,10 +40,10 @@ export class PopupContainer extends PureComponent<PopupContainerProps, PopupCont
     anchor: 'bottom',
     as: 'div',
     offset: 0,
+    root: HTMLElement,
     willBePreMounted: false,
   };
 
-  parentEl: HTMLElement;
   el: ?HTMLElement;
   focusOut: Function;
   setRef: Function;
@@ -56,7 +56,6 @@ export class PopupContainer extends PureComponent<PopupContainerProps, PopupCont
       left: 0,
       top: 0,
     };
-    this.parentEl = document.createElement('div');
     this.setRef = el => {
       this.el = el;
     };
@@ -100,10 +99,6 @@ export class PopupContainer extends PureComponent<PopupContainerProps, PopupCont
   }
 
   componentDidMount() {
-    if (document.body) {
-      document.body.appendChild(this.parentEl);
-    }
-
     if (!this.props.willBePreMounted || hasBeenPreMounted(this.props.id)) {
       this.computeAndSetPosition();
       global.addEventListener('mouseup', this.focusOut);
@@ -114,10 +109,6 @@ export class PopupContainer extends PureComponent<PopupContainerProps, PopupCont
   }
 
   componentWillUnmount() {
-    if (document.body) {
-      document.body.removeChild(this.parentEl);
-    }
-
     if (!this.props.willBePreMounted || hasBeenPreMounted(this.props.id)) {
       this.props.closePopup();
       global.removeEventListener('mouseup', this.focusOut);
@@ -137,6 +128,7 @@ export class PopupContainer extends PureComponent<PopupContainerProps, PopupCont
       children,
       className,
       closePopup,
+      root,
       style,
     } = this.props;
     const {
@@ -161,7 +153,7 @@ export class PopupContainer extends PureComponent<PopupContainerProps, PopupCont
           closePopup,
         })}
       </Component>,
-      this.parentEl,
+      root,
     );
   }
 };
@@ -170,6 +162,7 @@ PopupContainer.defaultProps = {
   anchor: 'bottom',
   as: 'div',
   offset: 0,
+  root: document.body || document.createElement('div'),
   willBePreMounted: false,
 };
 

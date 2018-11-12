@@ -27,10 +27,10 @@ type ModalContainerState = {
 export class ModalContainer extends PureComponent<ModalContainerProps, ModalContainerState> {
   static defaultProps: {
     as: 'div',
+    root: HTMLElement,
     willBePreMounted: false,
   };
 
-  parentEl: HTMLElement;
   el: ?HTMLElement;
   setRef: Function;
   updatePosition: Function;
@@ -41,7 +41,6 @@ export class ModalContainer extends PureComponent<ModalContainerProps, ModalCont
       left: 0,
       top: 0,
     };
-    this.parentEl = document.createElement('div');
     this.setRef = el => {
       this.el = el;
     };
@@ -61,10 +60,6 @@ export class ModalContainer extends PureComponent<ModalContainerProps, ModalCont
   }
 
   componentDidMount() {
-    if (document.body) {
-      document.body.appendChild(this.parentEl);
-    }
-
     if (!this.props.willBePreMounted || hasBeenPreMounted(this.props.id)) {
       this.computeAndSetPosition();
       global.addEventListener('resize', this.updatePosition);
@@ -72,10 +67,6 @@ export class ModalContainer extends PureComponent<ModalContainerProps, ModalCont
   }
 
   componentWillUnmount() {
-    if (document.body) {
-      document.body.removeChild(this.parentEl);
-    }
-
     if (!this.props.willBePreMounted || hasBeenPreMounted(this.props.id)) {
       this.props.closeModal();
       global.removeEventListener('resize', this.updatePosition);
@@ -92,6 +83,7 @@ export class ModalContainer extends PureComponent<ModalContainerProps, ModalCont
       children,
       className,
       closeModal,
+      root,
       style,
     } = this.props;
     const containerStyle = {
@@ -107,13 +99,14 @@ export class ModalContainer extends PureComponent<ModalContainerProps, ModalCont
       >
         {children({ closeModal })}
       </Component>,
-      this.parentEl,
+      root,
     );
   }
 };
 
 ModalContainer.defaultProps = {
   as: 'div',
+  root: document.body || document.createElement('div'),
   willBePreMounted: false,
 };
 

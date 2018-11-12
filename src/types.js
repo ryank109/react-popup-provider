@@ -36,6 +36,7 @@ export type PopupContainerProps = {
   closePopup: ClosePopup,
   id?: string,
   offset: number,
+  root: HTMLElement,
   scrollableParents: Array<Element>,
   style?: { [string]: any },
   willBePreMounted: boolean,
@@ -102,6 +103,7 @@ export type ModalContainerProps = {
   className?: string,
   closeModal: CloseModal,
   id?: string,
+  root: HTMLElement,
   style?: { [string]: any },
   willBePreMounted: boolean,
 };
