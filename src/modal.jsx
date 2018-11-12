@@ -65,7 +65,7 @@ export class ModalContainer extends PureComponent<ModalContainerProps, ModalCont
       document.body.appendChild(this.parentEl);
     }
 
-    if (this.props.willBePreMounted || hasBeenPreMounted(this.props.id)) {
+    if (!this.props.willBePreMounted || hasBeenPreMounted(this.props.id)) {
       this.computeAndSetPosition();
       global.addEventListener('resize', this.updatePosition);
     }
