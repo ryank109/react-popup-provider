@@ -1,6 +1,6 @@
 {
   "name": "react-popup-provider",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "React popup using context API",
   "main": "dist/es/index.js",
   "module": "dist/es/index.js",
