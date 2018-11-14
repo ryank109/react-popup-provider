@@ -25,6 +25,8 @@ export type ProviderValue = {
 export type PopupContainerArgs = {
   closePopup: ClosePopup,
   contextClientRect?: ClientRect,
+  left: number,
+  top: number,
 };
 
 export type PopupContainerProps = {

@@ -151,6 +151,8 @@ export class PopupContainer extends PureComponent<PopupContainerProps, PopupCont
         {children({
           contextClientRect,
           closePopup,
+          left,
+          top,
         })}
       </Component>,
       root,
