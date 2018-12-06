@@ -101,7 +101,7 @@ export class PopupContainer extends PureComponent<PopupContainerProps, PopupCont
   componentDidMount() {
     if (!this.props.willBePreMounted || hasBeenPreMounted(this.props.id)) {
       this.computeAndSetPosition();
-      global.addEventListener('mouseup', this.focusOut);
+      global.addEventListener('mousedown', this.focusOut);
       global.addEventListener('resize', this.updatePosition);
       this.props.scrollableParents.forEach(
         parentElem => parentElem.addEventListener('scroll', this.updatePosition));
@@ -111,7 +111,7 @@ export class PopupContainer extends PureComponent<PopupContainerProps, PopupCont
   componentWillUnmount() {
     if (!this.props.willBePreMounted || hasBeenPreMounted(this.props.id)) {
       this.props.closePopup();
-      global.removeEventListener('mouseup', this.focusOut);
+      global.removeEventListener('mousedown', this.focusOut);
       global.removeEventListener('resize', this.updatePosition);
       this.props.scrollableParents.forEach(
         parentElem => parentElem.removeEventListener('scroll', this.updatePosition));
