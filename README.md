@@ -83,12 +83,16 @@ Wrap it once or wrap it before you use Popup or Modal.
    * `children`: `ModalContainerArgs => React$Node`
    * `className`: `string`
    * `closeModal`: `CloseModal` - Close modal function callback.
-   * `id`: `string` - Optional id.  Defaults to random id, if not assigned.
+   * `id`: `string` - Required.
    * `root`: `HTMLElement` - Portal element. Defaults to `<body>`
    * `style`: `{ [string]: any }`
    * `willBePreMounted`: `boolean` - This was really for react-spring's animation to `auto` height/width option, not sure if react-spring still works with `auto`.
  * **ModalContext** - context for Modal
- * **ModalDef** - `({ closeModal, isOpen }) => (isOpen && <TheView />)`
+   * `children`: `{ closeModal, isOpen, openModal } => <Button />`
+   * `modalId`: `string` - Must match with ModalDef's id.
+ * **ModalDef** - modal definition
+   * `children`: `({ closeModal, isOpen }) => (isOpen && <TheView />)`
+   * `id`: `string` - Must match with ModalContext's id.
  
 ##### Popup
 
@@ -105,11 +109,19 @@ Wrap it once or wrap it before you use Popup or Modal.
    * `className`: `string`
    * `contextRef`: `Element` - Reference to the popup context from the provider.
    * `closePopup`: `ClosePopup` - Close popup callback function.
-   * `id`: `string` - Optional id. Defaults to random string.
+   * `id`: `string` - Required id.
    * `offset`: `number` - Offset in pixels from the anchored position
    * `root`: `HTMLElement` - Portal element, defaults to `<body>`
    * `scrollableParents`: `Array<Element>` - List of scrollable parents from the provider.
    * `style`: `{ [string]: any }`
    * `willBePreMounted`: `boolean` - This was really for react-spring's animation to `auto` height/width option, not sure if react-spring still works with `auto`.
- * **PopupContext** - context for Popup (i.e Button that opens the popup ref must be assigned to the Button) `({ contextRef, openPopup }) => (<button ref={contextRef} onClick={openPopup}>...</button>)`
- * **PopupDef** - `({ closePopup, contextRef, isOpen, scrollableParents }) => (isOpen && <TheView />)`
+ * **PopupContext** - context for Popup (i.e Button that opens the popup ref must be assigned to the Button)
+   * `children` - `({ contextRef, openPopup }) => (<button ref={contextRef} onClick={openPopup}>...</button>)`
+   * `popupId`: `string` - Required, must match with PopupDef's `id`
+ * **PopupDef** - popup definition
+   * `children`: `({ closePopup, contextRef, isOpen, scrollableParents }) => (isOpen && <TheView />)`
+   * `id`: `sting` - Required, must match with PopupContext's `id`
+
+
+### What's Next?
+ * Eliminate the necessity of `id` by requiring one provider per Modal or Popup. This will simplify some internal logic as well.
