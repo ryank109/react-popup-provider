@@ -93,7 +93,7 @@ Wrap it once or wrap it before you use Popup or Modal.
  * **ModalDef** - modal definition
    * `children`: `({ closeModal, isOpen }) => (isOpen && <TheView />)`
    * `id`: `string` - Must match with ModalContext's id.
- 
+
 ##### Popup
 
  * **Popup** - Simple compound component that hides the PopupContainer, PopupContext, and PopupDef. This is an example of what you can do with the other components.
@@ -101,6 +101,7 @@ Wrap it once or wrap it before you use Popup or Modal.
    * `children`: `PopupDefArgs => [PopupContextArgs => React$Node, PopupContainerArgs => React$Node]`
    * `className`: `string`
    * `offset`: `number` - Offset in pixels from the anchored position
+   * `shouldCenterToContext`: `boolean` - Shows the popup center to the context, if true.  Defaults to false.
    * `style`: `{ [string]: any }`
  * **PopupContainer** - container that renders to portal and has logic to reposition
    * `anchor`: `top | bottom | left | right`
@@ -113,6 +114,7 @@ Wrap it once or wrap it before you use Popup or Modal.
    * `offset`: `number` - Offset in pixels from the anchored position
    * `root`: `HTMLElement` - Portal element, defaults to `<body>`
    * `scrollableParents`: `Array<Element>` - List of scrollable parents from the provider.
+   * `shouldCenterToContext`: `boolean` - Shows the popup center to the context, if true.  Defaults to false.
    * `style`: `{ [string]: any }`
    * `willBePreMounted`: `boolean` - This was really for react-spring's animation to `auto` height/width option, not sure if react-spring still works with `auto`.
  * **PopupContext** - context for Popup (i.e Button that opens the popup ref must be assigned to the Button)

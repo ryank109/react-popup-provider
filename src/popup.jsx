@@ -78,6 +78,7 @@ export class PopupContainer extends PureComponent<PopupContainerProps, PopupCont
       anchor,
       contextRef,
       offset,
+      shouldCenterToContext,
     } = this.props;
     if (this.el && contextRef) {
       const popupRect = this.el.getBoundingClientRect();
@@ -90,6 +91,7 @@ export class PopupContainer extends PureComponent<PopupContainerProps, PopupCont
         global.innerWidth,
         global.innerHeight,
         offset,
+        shouldCenterToContext,
       );
       this.setState({
         ...position,
@@ -165,6 +167,7 @@ PopupContainer.defaultProps = {
   as: 'div',
   offset: 0,
   root: document.body || document.createElement('div'),
+  shouldCenterToContext: false,
   willBePreMounted: false,
 };
 
@@ -218,6 +221,7 @@ export class Popup extends PureComponent<PopupProps> {
               closePopup={closePopup}
               offset={this.props.offset}
               scrollableParents={scrollableParents}
+              shouldCenterToContext={this.props.shouldCenterToContext}
               style={this.props.style}
             >
               {def}

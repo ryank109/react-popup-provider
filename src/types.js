@@ -40,6 +40,7 @@ export type PopupContainerProps = {
   offset: number,
   root: HTMLElement,
   scrollableParents: Array<Element>,
+  shouldCenterToContext: boolean,
   style?: { [string]: any },
   willBePreMounted: boolean,
 };
@@ -76,6 +77,7 @@ export type PopupProps = {
   ],
   className?: string,
   offset: number,
+  shouldCenterToContext: boolean,
   style?: { [string]: any },
 };
 
