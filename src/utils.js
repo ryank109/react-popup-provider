@@ -35,9 +35,11 @@ export function adjustPosition(
   popupSize: number,
   ceiling: number,
   floor: number,
+  shouldCenterToContext: boolean
 ) {
-  return (ceiling + popupSize > windowSize && floor - popupSize >= 0)
-    ? floor - popupSize : ceiling;
+  const ceilingAdjustment = shouldCenterToContext ? (popupSize - floor + ceiling) / 2 : 0;
+  return (ceiling + popupSize - ceilingAdjustment > windowSize && floor - popupSize >= 0)
+    ? floor - popupSize : ceiling - ceilingAdjustment;
 }
 
 export function calculatePosition(
@@ -67,6 +69,7 @@ export function getPopupPosition(
   windowWidth: number,
   windowHeight: number,
   offset: number,
+  shouldCenterToContext: boolean = false,
 ): { left: number, top: number } {
   switch (anchor) {
   case 'bottom':
@@ -76,7 +79,8 @@ export function getPopupPosition(
         windowWidth,
         popupWidth,
         rect.left,
-        rect.right) + window.pageXOffset,
+        rect.right,
+        shouldCenterToContext) + window.pageXOffset,
       top: calculatePosition(
         windowHeight,
         popupHeight,
@@ -98,7 +102,8 @@ export function getPopupPosition(
         windowHeight,
         popupHeight,
         rect.top,
-        rect.bottom) + window.pageYOffset,
+        rect.bottom,
+        shouldCenterToContext) + window.pageYOffset,
     };
   }
 }
