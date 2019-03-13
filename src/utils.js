@@ -37,9 +37,21 @@ export function adjustPosition(
   floor: number,
   shouldCenterToContext: boolean
 ) {
-  const ceilingAdjustment = shouldCenterToContext ? (popupSize - floor + ceiling) / 2 : 0;
-  return (ceiling + popupSize - ceilingAdjustment > windowSize && floor - popupSize >= 0)
-    ? floor - popupSize : ceiling - ceilingAdjustment;
+  if (shouldCenterToContext) {
+    const ceilingAdjustment = (popupSize - floor + ceiling) / 2;
+    if (ceiling - ceilingAdjustment < 0) {
+      return ceiling;
+    }
+
+    if (ceiling + popupSize - ceilingAdjustment > windowSize && floor - popupSize >= 0) {
+      return floor - popupSize;
+    }
+
+    return ceiling - ceilingAdjustment;
+  }
+
+  return (ceiling + popupSize > windowSize && floor - popupSize >= 0)
+    ? floor - popupSize : ceiling;
 }
 
 export function calculatePosition(
