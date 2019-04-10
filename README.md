@@ -13,19 +13,20 @@ import { PopupProvider } from 'react-popup-provider';
 // some-view.js
 import { Popup } from 'react-popup-provider';
 <SomeView>
-  <Popup>
-    {({
+  <Popup
+    context={({
       contextRef,
-      openPopup,
+      open,
     }) => (
-      <button ref={contextRef} onClick={openPopup}>Open</button>
+      <button ref={contextRef} onClick={open}>Open</button>
     )}
+  >
     {({
-      closePopup,
+      close,
     }) => (
       <div>
         My popup
-        <button onClick={closePopup}>Close</button>
+        <button onClick={close}>Close</button>
       </div>
     )}
   </Popup>
@@ -35,20 +36,20 @@ import { Popup } from 'react-popup-provider';
 ##### More Control
 ```javascript
 // some-view.js
-import { PopupContext, PopupContainer, PopupDef } from 'react-popup-provider';
-<SomeView>
-  <PopupContext popupId="my-popup">
-    {({ contextRef, openPopup }) => (
+import { Consumer, PopupProvider, PopupContainer } from 'react-popup-provider';
+<PopupProvider>
+  <Consumer>
+    {({ contextRef, open }) => (
       <div>
         <div ref={contextRef}>
-        <button onClick={openPopup}>Open on Div</button>
+        <button onClick={open}>Open on Div</button>
       </div>
     )}
-  </PopupContext>
-  <PopupDef id="my-popup">
+  </Consumer>
+  <Consumer>
     {({
-      contextClientRect,
-      closePopup,
+      contextRef,
+      close,
       isOpen,
       scrollableParents,
     }) => (
@@ -56,8 +57,8 @@ import { PopupContext, PopupContainer, PopupDef } from 'react-popup-provider';
         {
           isOpen
           && <PopupContainer
-            clientRect={contextClientRect}
-            closePopup={closePopup}
+            close={close}
+            contextRef={contextRef}
             scrollableParents={scrollableParents}
           >
             {props.children}
@@ -66,64 +67,56 @@ import { PopupContext, PopupContainer, PopupDef } from 'react-popup-provider';
       </SomeAnimation>
     )}
   </Consumer>
-</SomeView>
+</PopupProvider>
 ```
 
 
 ### APIs
 
 ##### PopupProvider
-Wrap it once or wrap it before you use Popup or Modal.
+Context Provider.
+
+##### Consumer
+Context Consumer.
 
 ##### Modal
 
- * **Modal** - Simple compound component that hides the ModalContainer, ModalContext, and ModalDef. This is an example of what you can do with the other components.
- * **ModalContainer** - container that renders to portal
+ * **Modal** - Simple compound component that hides the ModalContainer and context APIs. This is an example of what you can do with the other components.
    * `as`: `React$ElementType` - defaults to `div`. Container's root element.
-   * `children`: `ModalContainerArgs => React$Node`
+   * `children`: `({ close, isOpen }) => React$Node`
    * `className`: `string`
-   * `closeModal`: `CloseModal` - Close modal function callback.
-   * `id`: `string` - Required.
+   * `close`: `() => void` - Close function callback.
+   * `context`: `({ close, contextRef, isOpen, open, scrollableParents }) => React$Node`
    * `root`: `HTMLElement` - Portal element. Defaults to `<body>`
    * `style`: `{ [string]: any }`
-   * `willBePreMounted`: `boolean` - This was really for react-spring's animation to `auto` height/width option, not sure if react-spring still works with `auto`.
- * **ModalContext** - context for Modal
-   * `children`: `{ closeModal, isOpen, openModal } => <Button />`
-   * `modalId`: `string` - Must match with ModalDef's id.
- * **ModalDef** - modal definition
-   * `children`: `({ closeModal, isOpen }) => (isOpen && <TheView />)`
-   * `id`: `string` - Must match with ModalContext's id.
+ * **ModalContainer** - container that renders to portal
+   * `as`: `React$ElementType` - defaults to `div`. Container's root element.
+   * `children`: `({ close, isOpen }) => React$Node`
+   * `className`: `string`
+   * `close`: `() => void` - Close function callback.
+   * `root`: `HTMLElement` - Portal element. Defaults to `<body>`
+   * `style`: `{ [string]: any }`
 
 ##### Popup
 
- * **Popup** - Simple compound component that hides the PopupContainer, PopupContext, and PopupDef. This is an example of what you can do with the other components.
+ * **Popup** - Simple compound component that hides the PopupContainer and context APIs. This is an example of what you can do with the other components.
    * `anchor`: `top | bottom | left | right`
-   * `children`: `PopupDefArgs => [PopupContextArgs => React$Node, PopupContainerArgs => React$Node]`
+   * `as`: `React$ElementType` - Container's root element. Defaults to `div`.
+   * `children`: `({ close, contextClientRect, left, top, }) => React$Node`
    * `className`: `string`
+   * `context`: `({ close, contextRef, isOpen, open, scrollableParents }) => React$Node`
    * `offset`: `number` - Offset in pixels from the anchored position
    * `shouldCenterToContext`: `boolean` - Shows the popup center to the context, if true.  Defaults to false.
    * `style`: `{ [string]: any }`
  * **PopupContainer** - container that renders to portal and has logic to reposition
    * `anchor`: `top | bottom | left | right`
    * `as`: `React$ElementType` - Defaults to `div`. Container's root element.
-   * `children`: `PopupContainerArgs => React$Node`
+   * `children`: `({ close, contextClientRect, left, top, }) => React$Node`
    * `className`: `string`
    * `contextRef`: `Element` - Reference to the popup context from the provider.
    * `closePopup`: `ClosePopup` - Close popup callback function.
-   * `id`: `string` - Required id.
    * `offset`: `number` - Offset in pixels from the anchored position
    * `root`: `HTMLElement` - Portal element, defaults to `<body>`
    * `scrollableParents`: `Array<Element>` - List of scrollable parents from the provider.
    * `shouldCenterToContext`: `boolean` - Shows the popup center to the context, if true.  Defaults to false.
    * `style`: `{ [string]: any }`
-   * `willBePreMounted`: `boolean` - This was really for react-spring's animation to `auto` height/width option, not sure if react-spring still works with `auto`.
- * **PopupContext** - context for Popup (i.e Button that opens the popup ref must be assigned to the Button)
-   * `children` - `({ contextRef, openPopup }) => (<button ref={contextRef} onClick={openPopup}>...</button>)`
-   * `popupId`: `string` - Required, must match with PopupDef's `id`
- * **PopupDef** - popup definition
-   * `children`: `({ closePopup, contextRef, isOpen, scrollableParents }) => (isOpen && <TheView />)`
-   * `id`: `sting` - Required, must match with PopupContext's `id`
-
-
-### What's Next?
- * Eliminate the necessity of `id` by requiring one provider per Modal or Popup. This will simplify some internal logic as well.
