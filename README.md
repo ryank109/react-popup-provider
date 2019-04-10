@@ -3,14 +3,6 @@
 ### Usage
 
 ```javascript
-// main.js
-import { PopupProvider } from 'react-popup-provider';
-<PopupProvider>
-  <App/>
-</PopupProvider>
-
-
-// some-view.js
 import { Popup } from 'react-popup-provider';
 <SomeView>
   <Popup
@@ -35,7 +27,6 @@ import { Popup } from 'react-popup-provider';
 
 ##### More Control
 ```javascript
-// some-view.js
 import { Consumer, PopupProvider, PopupContainer } from 'react-popup-provider';
 <PopupProvider>
   <Consumer>
