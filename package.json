@@ -1,6 +1,6 @@
 {
   "name": "react-popup-provider",
-  "version": "0.0.10",
+  "version": "1.0.0",
   "description": "React popup using context API",
   "main": "dist/es/index.js",
   "module": "dist/es/index.js",
@@ -8,6 +8,7 @@
     "build": "rimraf dist/es && flow-copy-source src dist/es && NODE_ENV=es babel src --out-dir dist/es",
     "flow": "flow",
     "lint": "eslint 'src/**'",
+    "start": "start-storybook",
     "test": "jest"
   },
   "repository": {
@@ -32,6 +33,7 @@
     "@babel/preset-env": "^7.1.0",
     "@babel/preset-flow": "^7.0.0",
     "@babel/preset-react": "^7.0.0",
+    "@storybook/react": "^5.0.6",
     "babel-core": "^7.0.0-bridge.0",
     "babel-eslint": "^10.0.1",
     "babel-loader": "^8.0.4",

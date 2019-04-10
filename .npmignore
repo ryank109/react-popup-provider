@@ -1,3 +1,6 @@
 .eslintrc
+.storybook
+.vscode
 src
+stories
 webpack.config.js

@@ -1,20 +1,12 @@
 // @flow
-import React, { Fragment, PureComponent } from 'react';
+import React, { PureComponent } from 'react';
 import { createPortal } from 'react-dom';
-import { PopupContext } from './context';
-import { Consumer } from './provider';
-import {
-  getPopupPosition,
-  getRandomId,
-  hasBeenPreMounted,
-  togglePreMountedFlag,
-} from './utils';
+import { Consumer, PopupProvider } from './provider';
+import { getPopupPosition } from './utils';
 
 import type {
   Anchor,
   PopupContainerProps,
-  PopupDefArgs,
-  PopupDefProps,
   PopupProps,
 } from './types';
 
@@ -41,7 +33,6 @@ export class PopupContainer extends PureComponent<PopupContainerProps, PopupCont
     as: 'div',
     offset: 0,
     root: HTMLElement,
-    willBePreMounted: false,
   };
 
   el: ?HTMLElement;
@@ -52,24 +43,28 @@ export class PopupContainer extends PureComponent<PopupContainerProps, PopupCont
   constructor(props: PopupContainerProps) {
     super(props);
     this.state = {
-      contextClientRect: props.contextRef && props.contextRef.getBoundingClientRect(),
       left: 0,
       top: 0,
     };
+
+    if (props.contextRef.current) {
+      this.state.contextClientRect = props.contextRef.current.getBoundingClientRect();
+    }
+
     this.setRef = el => {
       this.el = el;
     };
-    this.updatePosition = () => global.requestAnimationFrame(() => {
+    this.updatePosition = () => window.requestAnimationFrame(() => {
       this.computeAndSetPosition();
     });
     this.focusOut = (evt) => {
       if (this.el
-        && this.props.contextRef
+        && this.props.contextRef.current
         && (isElementInContext(evt.target, this.el)
-        || isElementInContext(evt.target, this.props.contextRef))) {
+        || isElementInContext(evt.target, this.props.contextRef.current))) {
         return;
       }
-      this.props.closePopup();
+      this.props.close();
     };
   }
 
@@ -80,16 +75,17 @@ export class PopupContainer extends PureComponent<PopupContainerProps, PopupCont
       offset,
       shouldCenterToContext,
     } = this.props;
-    if (this.el && contextRef) {
+    const { current } = contextRef;
+    if (this.el && current) {
       const popupRect = this.el.getBoundingClientRect();
-      const contextClientRect = contextRef.getBoundingClientRect();
+      const contextClientRect = current.getBoundingClientRect();
       const position = getPopupPosition(
         anchor,
         contextClientRect,
         popupRect.width,
         popupRect.height,
-        global.innerWidth,
-        global.innerHeight,
+        window.innerWidth,
+        window.innerHeight,
         offset,
         shouldCenterToContext,
       );
@@ -101,27 +97,19 @@ export class PopupContainer extends PureComponent<PopupContainerProps, PopupCont
   }
 
   componentDidMount() {
-    if (!this.props.willBePreMounted || hasBeenPreMounted(this.props.id)) {
-      this.computeAndSetPosition();
-      global.addEventListener('mousedown', this.focusOut);
-      global.addEventListener('resize', this.updatePosition);
-      this.props.scrollableParents.forEach(
-        parentElem => parentElem.addEventListener('scroll', this.updatePosition));
-    }
+    this.computeAndSetPosition();
+    window.addEventListener('mousedown', this.focusOut);
+    window.addEventListener('resize', this.updatePosition);
+    this.props.scrollableParents.forEach(
+      parentElem => parentElem.addEventListener('scroll', this.updatePosition));
   }
 
   componentWillUnmount() {
-    if (!this.props.willBePreMounted || hasBeenPreMounted(this.props.id)) {
-      this.props.closePopup();
-      global.removeEventListener('mousedown', this.focusOut);
-      global.removeEventListener('resize', this.updatePosition);
-      this.props.scrollableParents.forEach(
-        parentElem => parentElem.removeEventListener('scroll', this.updatePosition));
-    }
-
-    if (this.props.willBePreMounted) {
-      togglePreMountedFlag(this.props.id);
-    }
+    // this.props.close();
+    window.removeEventListener('mousedown', this.focusOut);
+    window.removeEventListener('resize', this.updatePosition);
+    this.props.scrollableParents.forEach(
+      parentElem => parentElem.removeEventListener('scroll', this.updatePosition));
   }
 
   render() {
@@ -129,7 +117,7 @@ export class PopupContainer extends PureComponent<PopupContainerProps, PopupCont
       as: Component,
       children,
       className,
-      closePopup,
+      close,
       root,
       style,
     } = this.props;
@@ -139,8 +127,8 @@ export class PopupContainer extends PureComponent<PopupContainerProps, PopupCont
       contextClientRect,
     } = this.state;
     const containerStyle = {
-      position: 'absolute',
       left,
+      position: 'absolute',
       top,
       ...style,
     };
@@ -151,8 +139,8 @@ export class PopupContainer extends PureComponent<PopupContainerProps, PopupCont
         style={containerStyle}
       >
         {children({
+          close,
           contextClientRect,
-          closePopup,
           left,
           top,
         })}
@@ -171,64 +159,32 @@ PopupContainer.defaultProps = {
   willBePreMounted: false,
 };
 
-export const PopupDef = (props: PopupDefProps) => (
-  <Consumer>
-    {({
-      getClosePopupHandler,
-      popupStateMap,
-    }) => {
-      const isOpen = !!popupStateMap[props.id];
-      const {
-        contextRef,
-        scrollableParents = []
-      } = popupStateMap[props.id] || {};
-      return props.children({
-        closePopup: getClosePopupHandler(props.id),
+export const Popup = (props: PopupProps) => (
+  <PopupProvider>
+    <Consumer>
+      {props.context}
+    </Consumer>
+    <Consumer>
+      {({
+        close,
         contextRef,
         isOpen,
         scrollableParents,
-      });
-    }}
-  </Consumer>
+      }) => (
+        isOpen && <PopupContainer
+          as={props.as}
+          anchor={props.anchor}
+          className={props.className}
+          contextRef={contextRef}
+          close={close}
+          offset={props.offset}
+          scrollableParents={scrollableParents}
+          shouldCenterToContext={props.shouldCenterToContext}
+          style={props.style}
+        >
+          {props.children}
+        </PopupContainer>
+      )}
+    </Consumer>
+  </PopupProvider>
 );
-
-export class Popup extends PureComponent<PopupProps> {
-  id: string;
-
-  constructor(props: PopupProps) {
-    super(props);
-    this.id = getRandomId();
-  }
-
-  render() {
-    const [context, def] = this.props.children;
-    return (
-      <Fragment>
-        <PopupContext popupId={this.id}>
-          {context}
-        </PopupContext>
-        <PopupDef id={this.id}>
-          {({
-            closePopup,
-            contextRef,
-            isOpen,
-            scrollableParents,
-          }) => (
-            isOpen && <PopupContainer
-              anchor={this.props.anchor}
-              className={this.props.className}
-              contextRef={contextRef}
-              closePopup={closePopup}
-              offset={this.props.offset}
-              scrollableParents={scrollableParents}
-              shouldCenterToContext={this.props.shouldCenterToContext}
-              style={this.props.style}
-            >
-              {def}
-            </PopupContainer>
-          )}
-        </PopupDef>
-      </Fragment>
-    );
-  }
-}

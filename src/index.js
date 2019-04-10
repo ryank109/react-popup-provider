@@ -1,6 +1,5 @@
 // @flow
 export { Consumer, PopupProvider } from './provider';
-export { Modal, ModalContainer, ModalDef } from './modal';
-export { Popup, PopupContainer, PopupDef } from './popup';
-export { ModalContext, PopupContext } from './context';
+export { Modal, ModalContainer } from './modal';
+export { Popup, PopupContainer } from './popup';
 export type * from './types';

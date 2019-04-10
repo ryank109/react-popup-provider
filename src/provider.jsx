@@ -6,7 +6,10 @@ import React, {
 } from 'react';
 import { getAllScrollableParents } from './utils';
 
-import type { ProviderValue } from './types';
+import type {
+  GenericFunc,
+  ProviderValue,
+} from './types';
 
 type PopupProps = {
   children: React$Node,
@@ -14,74 +17,43 @@ type PopupProps = {
 
 const noop = () => {};
 const DEFAULT: ProviderValue = {
-  createContextRef: () => createRef(),
-  getClosePopupHandler: () => noop,
-  getOpenPopupHandler: () => noop,
-  popupStateMap: {},
-  removeContextRef: noop,
+  close: noop,
+  contextRef: createRef(),
+  isOpen: false,
+  open: noop,
+  scrollableParents: [],
 };
 
 const { Provider, Consumer } = createContext<ProviderValue>(DEFAULT);
 
 class PopupProvider extends PureComponent<PopupProps, ProviderValue> {
-  contextRefMap: { [string]: { current: null | React$ElementRef<any> } };
-  createContextRef: string => { current: null | React$ElementRef<any> };
-  getClosePopupHandler: string => () => void;
-  getOpenPopupHandler: string => () => void;
-  removeContextRef: string => void;
+  close: GenericFunc;
+  open: GenericFunc;
 
   constructor(props: PopupProps) {
     super(props);
 
-    this.contextRefMap = {};
+    this.close = () => {
+      this.setState({ isOpen: false });
+    };
 
-    this.getClosePopupHandler = (id) => () => {
-      this.setState(({ popupStateMap }) => {
-        delete popupStateMap[id];
-        return ({
-          popupStateMap: { ...popupStateMap },
-        });
+    this.open = () => {
+      this.setState(({ contextRef }) => {
+        const elem = contextRef && contextRef.current;
+        const scrollableParents = elem ? getAllScrollableParents(elem) : [];
+        return {
+          isOpen: true,
+          scrollableParents,
+        };
       });
     };
 
-    this.getOpenPopupHandler = (id) => () => {
-      const state = this.state.popupStateMap[id];
-      if (!state) {
-        let scrollableParents;
-        const contextRef = this.contextRefMap[id];
-        const elem = contextRef && contextRef.current;
-        if (elem) {
-          scrollableParents = getAllScrollableParents(elem);
-        }
-        this.setState(({ popupStateMap }) => ({
-          popupStateMap: {
-            ...popupStateMap,
-            [id]: {
-              contextRef: elem,
-              scrollableParents,
-            },
-          },
-        }));
-      }
-    };
-
-    this.createContextRef = id => {
-      if (!this.contextRefMap[id]) {
-        this.contextRefMap[id] = createRef();
-      }
-      return this.contextRefMap[id];
-    };
-
-    this.removeContextRef = id => {
-      delete this.contextRefMap[id];
-    };
-
     this.state = {
-      getClosePopupHandler: this.getClosePopupHandler,
-      getOpenPopupHandler: this.getOpenPopupHandler,
-      popupStateMap: {},
-      createContextRef: this.createContextRef,
-      removeContextRef: this.removeContextRef,
+      close: this.close,
+      contextRef: createRef(),
+      isOpen: false,
+      open: this.open,
+      scrollableParents: [],
     };
   }
 

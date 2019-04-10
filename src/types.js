@@ -1,29 +1,20 @@
 // @flow
 export type Anchor = 'bottom' | 'left' | 'right' | 'top';
 
-type GenericFunc = () => void;
+export type GenericFunc = () => void;
 
-export type CloseModal = GenericFunc;
-export type ClosePopup = GenericFunc;
-export type OpenModal = GenericFunc;
-export type OpenPopup = GenericFunc;
 export type ContextRef = { current: null | React$ElementRef<any> };
 
 export type ProviderValue = {
-  createContextRef: string => ContextRef,
-  getClosePopupHandler: string => ClosePopup,
-  getOpenPopupHandler: string => OpenPopup,
-  popupStateMap: {
-    [string]: {
-      contextRef?: Element,
-      scrollableParents?: Array<Element>,
-    },
-  },
-  removeContextRef: string => void,
+  close: GenericFunc,
+  contextRef: ContextRef,
+  isOpen: boolean,
+  open: GenericFunc,
+  scrollableParents: Array<Element>,
 };
 
 export type PopupContainerArgs = {
-  closePopup: ClosePopup,
+  close: GenericFunc,
   contextClientRect?: ClientRect,
   left: number,
   top: number,
@@ -34,94 +25,45 @@ export type PopupContainerProps = {
   as: React$ElementType,
   children: PopupContainerArgs => React$Node,
   className?: string,
-  contextRef?: Element,
-  closePopup: ClosePopup,
-  id?: string,
+  contextRef: ContextRef,
+  close: GenericFunc,
   offset: number,
   root: HTMLElement,
   scrollableParents: Array<Element>,
   shouldCenterToContext: boolean,
   style?: { [string]: any },
-  willBePreMounted: boolean,
-};
-
-export type PopupDefArgs = {
-  closePopup: ClosePopup,
-  contextRef?: Element,
-  isOpen: boolean,
-  scrollableParents: Array<Element>,
-};
-
-export type PopupDefProps = {
-  children: PopupDefArgs => React$Node,
-  id: string,
-};
-
-export type PopupContextArgs = {
-  closePopup: ClosePopup,
-  contextRef: ContextRef,
-  isOpen: boolean,
-  openPopup: OpenPopup,
-};
-
-export type PopupContextProps = {
-  children: PopupContextArgs => React$Node,
-  popupId: string,
 };
 
 export type PopupProps = {
+  as?: React$ElementType,
   anchor: Anchor,
-  children: PopupDefArgs => [
-    PopupContextArgs => React$Node,
-    PopupContainerArgs => React$Node,
-  ],
+  children: PopupContainerArgs => React$Node,
+  context: ProviderValue => React$Node,
   className?: string,
   offset: number,
   shouldCenterToContext: boolean,
   style?: { [string]: any },
 };
 
-export type ModalContextArgs = {
-  closeModal: CloseModal,
-  isOpen: boolean,
-  openModal: OpenModal,
-};
-
-export type ModalContextProps = {
-  children: ModalContextArgs => React$Node,
-  modalId: string,
-};
-
-export type ModalDefArgs = {
-  closeModal: CloseModal,
-  isOpen: boolean,
-};
-
 export type ModalContainerArgs = {
-  closeModal: CloseModal,
+  close: GenericFunc,
+  isOpen: boolean,
 };
 
 export type ModalContainerProps = {
   as: React$ElementType,
   children: ModalContainerArgs => React$Node,
   className?: string,
-  closeModal: CloseModal,
-  id?: string,
+  close: GenericFunc,
+  isOpen: boolean,
   root: HTMLElement,
   style?: { [string]: any },
-  willBePreMounted: boolean,
-};
-
-export type ModalDefProps = {
-  children: ModalDefArgs => React$Node,
-  id: string,
 };
 
 export type ModalProps = {
-  children: [
-    ModalContextArgs => React$Node,
-    ModalContainerArgs => React$Node,
-  ],
+  as?: React$ElementType,
+  children: ModalContainerArgs => React$Node,
+  context: ProviderValue => React$Node,
   className?: string,
   style?: { [string]: any },
 };

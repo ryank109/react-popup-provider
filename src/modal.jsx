@@ -1,8 +1,7 @@
 // @flow
-import React, { Fragment, PureComponent } from 'react';
+import React, { createRef, Fragment, PureComponent } from 'react';
 import { createPortal } from 'react-dom';
-import { ModalContext } from './context';
-import { Consumer } from './provider';
+import { Consumer, PopupProvider } from './provider';
 import {
   getPopupPosition,
   getRandomId,
@@ -12,10 +11,8 @@ import {
 
 import type {
   Anchor,
+  ContextRef,
   ModalContainerProps,
-  ModalContextArgs,
-  ModalDefArgs,
-  ModalDefProps,
   ModalProps,
 } from './types';
 
@@ -28,30 +25,26 @@ export class ModalContainer extends PureComponent<ModalContainerProps, ModalCont
   static defaultProps: {
     as: 'div',
     root: HTMLElement,
-    willBePreMounted: false,
   };
 
-  el: ?HTMLElement;
-  setRef: Function;
+  ref: ContextRef;
   updatePosition: Function;
 
   constructor(props: ModalContainerProps) {
     super(props);
+    this.ref = createRef();
     this.state = {
       left: 0,
       top: 0,
     };
-    this.setRef = el => {
-      this.el = el;
-    };
-    this.updatePosition = () => global.requestAnimationFrame(() => {
+    this.updatePosition = () => window.requestAnimationFrame(() => {
       this.computeAndSetPosition();
     });
   }
 
   computeAndSetPosition() {
-    if (this.el) {
-      const { clientHeight, clientWidth } = this.el;
+    if (this.ref.current) {
+      const { clientHeight, clientWidth } = this.ref.current;
       this.setState({
         left: (window.innerWidth - clientWidth) / 2,
         top: (window.innerHeight - clientHeight) / 2,
@@ -60,21 +53,12 @@ export class ModalContainer extends PureComponent<ModalContainerProps, ModalCont
   }
 
   componentDidMount() {
-    if (!this.props.willBePreMounted || hasBeenPreMounted(this.props.id)) {
-      this.computeAndSetPosition();
-      global.addEventListener('resize', this.updatePosition);
-    }
+    this.computeAndSetPosition();
+    window.addEventListener('resize', this.updatePosition);
   }
 
   componentWillUnmount() {
-    if (!this.props.willBePreMounted || hasBeenPreMounted(this.props.id)) {
-      this.props.closeModal();
-      global.removeEventListener('resize', this.updatePosition);
-    }
-
-    if (this.props.willBePreMounted) {
-      togglePreMountedFlag(this.props.id);
-    }
+    window.removeEventListener('resize', this.updatePosition);
   }
 
   render() {
@@ -82,7 +66,8 @@ export class ModalContainer extends PureComponent<ModalContainerProps, ModalCont
       as: Component,
       children,
       className,
-      closeModal,
+      close,
+      isOpen,
       root,
       style,
     } = this.props;
@@ -94,10 +79,10 @@ export class ModalContainer extends PureComponent<ModalContainerProps, ModalCont
     return createPortal(
       <Component
         className={className}
-        ref={this.setRef}
+        ref={this.ref}
         style={containerStyle}
       >
-        {children({ closeModal })}
+        {children({ close, isOpen })}
       </Component>,
       root,
     );
@@ -107,55 +92,28 @@ export class ModalContainer extends PureComponent<ModalContainerProps, ModalCont
 ModalContainer.defaultProps = {
   as: 'div',
   root: document.body || document.createElement('div'),
-  willBePreMounted: false,
 };
 
-export const ModalDef = (props: ModalDefProps) => (
-  <Consumer>
-    {({
-      popupStateMap,
-      getClosePopupHandler,
-    }) => props.children({
-      closeModal: getClosePopupHandler(props.id),
-      isOpen: !!popupStateMap[props.id],
-    })}
-  </Consumer>
+export const Modal = (props: ModalProps) => (
+  <PopupProvider>
+    <Consumer>
+      {props.context}
+    </Consumer>
+    <Consumer>
+      {({
+        close,
+        isOpen,
+      }) => (
+        isOpen && <ModalContainer
+          as={props.as}
+          className={props.className}
+          close={close}
+          isOpen={isOpen}
+          style={props.style}
+        >
+          {props.children}
+        </ModalContainer>
+      )}
+    </Consumer>
+  </PopupProvider>
 );
-
-export class Modal extends PureComponent<ModalProps> {
-  id: string;
-
-  constructor(props: ModalProps) {
-    super(props);
-    this.id = getRandomId();
-  }
-
-  render() {
-    const [context, def] = this.props.children;
-    return (
-      <Fragment>
-        <ModalContext
-          modalId={this.id}
-        >
-          {context}
-        </ModalContext>
-        <ModalDef
-          id={this.id}
-        >
-          {({
-            closeModal,
-            isOpen,
-          }) => (
-            isOpen && <ModalContainer
-              className={this.props.className}
-              closeModal={closeModal}
-              style={this.props.style}
-            >
-              {def}
-            </ModalContainer>
-          )}
-        </ModalDef>
-      </Fragment>
-    );
-  }
-}
