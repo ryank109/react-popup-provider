@@ -1,6 +1,6 @@
 {
   "name": "react-popup-provider",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "React popup using context API",
   "main": "dist/es/index.js",
   "module": "dist/es/index.js",
@@ -43,6 +43,7 @@
     "flow-copy-source": "^2.0.2",
     "jest": "^23.6.0",
     "jest-junit": "^5.1.0",
+    "react-spring": "^8.0.19",
     "react-test-renderer": "^16.5.2",
     "webpack": "^4.20.2",
     "webpack-cli": "^3.1.1",

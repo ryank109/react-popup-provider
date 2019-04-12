@@ -1,5 +1,4 @@
 // @flow
-export { Consumer, PopupProvider } from './provider';
-export { Modal, ModalContainer } from './modal';
-export { Popup, PopupContainer } from './popup';
+export { default as Modal } from './modal';
+export { default as Popup } from './popup';
 export type * from './types';

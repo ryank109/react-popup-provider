@@ -13,17 +13,22 @@ export type ProviderValue = {
   scrollableParents: Array<Element>,
 };
 
-export type PopupContainerArgs = {
+export type AnimationProps = {
+  children: React$Node,
+  isOpen: boolean,
+};
+
+export type ContainerArgs = {
   close: GenericFunc,
   contextClientRect?: ClientRect,
   left: number,
   top: number,
 };
 
-export type PopupContainerProps = {
+export type ContainerProps = {
   anchor: Anchor,
   as: React$ElementType,
-  children: PopupContainerArgs => React$Node,
+  children: ContainerArgs => React$Node,
   className?: string,
   contextRef: ContextRef,
   close: GenericFunc,
@@ -34,36 +39,14 @@ export type PopupContainerProps = {
   style?: { [string]: any },
 };
 
-export type PopupProps = {
-  as?: React$ElementType,
+export type BaseProps = {
   anchor: Anchor,
-  children: PopupContainerArgs => React$Node,
+  animation: React$ElementType,
+  children: ContainerArgs => React$Node,
+  container: React$ElementType,
   context: ProviderValue => React$Node,
   className?: string,
   offset: number,
   shouldCenterToContext: boolean,
-  style?: { [string]: any },
-};
-
-export type ModalContainerArgs = {
-  close: GenericFunc,
-  isOpen: boolean,
-};
-
-export type ModalContainerProps = {
-  as: React$ElementType,
-  children: ModalContainerArgs => React$Node,
-  className?: string,
-  close: GenericFunc,
-  isOpen: boolean,
-  root: HTMLElement,
-  style?: { [string]: any },
-};
-
-export type ModalProps = {
-  as?: React$ElementType,
-  children: ModalContainerArgs => React$Node,
-  context: ProviderValue => React$Node,
-  className?: string,
   style?: { [string]: any },
 };
