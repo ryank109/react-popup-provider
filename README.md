@@ -3,111 +3,93 @@
 ### Usage
 
 ```javascript
+import React from 'react';
 import { Popup } from 'react-popup-provider';
-<SomeView>
-  <Popup
-    context={({
-      contextRef,
-      open,
-    }) => (
-      <button ref={contextRef} onClick={open}>Open</button>
-    )}
-  >
-    {({
-      close,
-    }) => (
-      <div>
-        My popup
-        <button onClick={close}>Close</button>
-      </div>
-    )}
-  </Popup>
-</SomeView>
+
+<Popup
+  context={({
+    contextRef,
+    open,
+  }) => (
+    <button ref={contextRef} onClick={open}>Open</button>
+  )}
+>
+  {() => <div>My popup</div>}
+</Popup>
 ```
 
-##### More Control
 ```javascript
-import { Consumer, PopupProvider, PopupContainer } from 'react-popup-provider';
-<PopupProvider>
-  <Consumer>
-    {({ contextRef, open }) => (
-      <div>
-        <div ref={contextRef}>
-        <button onClick={open}>Open on Div</button>
-      </div>
-    )}
-  </Consumer>
-  <Consumer>
-    {({
-      contextRef,
-      close,
-      isOpen,
-      scrollableParents,
-    }) => (
-      <SomeAnimation>
-        {
-          isOpen
-          && <PopupContainer
-            close={close}
-            contextRef={contextRef}
-            scrollableParents={scrollableParents}
-          >
-            {props.children}
-          </PopupContainer>
-        }
-      </SomeAnimation>
-    )}
-  </Consumer>
-</PopupProvider>
+import React from 'react';
+import { Modal } from 'react-popup-provider';
+
+<Modal
+  context={({ open }) => (
+    <button onClick={open}>Open Modal</button>
+  )}
+>
+  {({ close }) => (
+    <div>
+      <span>My Modal</span>
+      <button onClick={close}>Close</button>
+    </div>
+  )}
+</Modal>
+```
+
+##### With Animation (react-spring)
+```javascript
+// Modal works the same way
+import React, { cloneElement } from 'react';
+import { Popup } from 'react-popup-provider';
+import { Transition } from 'react-spring';
+
+const Appear = ({ children, isOpen }) => (
+  <Transition
+    enter={{ opacity: 1 }}
+    from={{ opacity: 0 }}
+    items={isOpen}
+    leave={{ opacity: 0 }}
+    native
+  >
+    {isOpen => (isOpen && (style =>
+      cloneElement(children, {
+        as: animated.div,
+        style
+      })
+    ))}
+  </Transition>
+);
+
+
+<Popup
+  animation={Appear}
+  context={({
+    contextRef,
+    open,
+  }) => (
+    <button ref={contextRef} onClick={open}>Open</button>
+  )}
+>
+  {() => <div>My popup</div>}
+</Popup>
 ```
 
 
 ### APIs
 
-##### PopupProvider
-Context Provider.
-
-##### Consumer
-Context Consumer.
-
 ##### Modal
-
- * **Modal** - Simple compound component that hides the ModalContainer and context APIs. This is an example of what you can do with the other components.
-   * `as`: `React$ElementType` - defaults to `div`. Container's root element.
-   * `children`: `({ close, isOpen }) => React$Node`
-   * `className`: `string`
-   * `close`: `() => void` - Close function callback.
-   * `context`: `({ close, contextRef, isOpen, open, scrollableParents }) => React$Node`
-   * `root`: `HTMLElement` - Portal element. Defaults to `<body>`
-   * `style`: `{ [string]: any }`
- * **ModalContainer** - container that renders to portal
-   * `as`: `React$ElementType` - defaults to `div`. Container's root element.
-   * `children`: `({ close, isOpen }) => React$Node`
-   * `className`: `string`
-   * `close`: `() => void` - Close function callback.
-   * `root`: `HTMLElement` - Portal element. Defaults to `<body>`
-   * `style`: `{ [string]: any }`
+ * `animation`: `React$ElementType` - defaults to `Tada` effect. Which is just show when `isOpen` is `true`.
+ * `children`: `({ close, left, top }) => React$Node`
+ * `className`: `string`
+ * `close`: `() => void` - Close function callback.
+ * `context`: `({ close, contextRef, isOpen, open, scrollableParents }) => React$Node`
 
 ##### Popup
-
- * **Popup** - Simple compound component that hides the PopupContainer and context APIs. This is an example of what you can do with the other components.
-   * `anchor`: `top | bottom | left | right`
-   * `as`: `React$ElementType` - Container's root element. Defaults to `div`.
-   * `children`: `({ close, contextClientRect, left, top, }) => React$Node`
-   * `className`: `string`
-   * `context`: `({ close, contextRef, isOpen, open, scrollableParents }) => React$Node`
-   * `offset`: `number` - Offset in pixels from the anchored position
-   * `shouldCenterToContext`: `boolean` - Shows the popup center to the context, if true.  Defaults to false.
-   * `style`: `{ [string]: any }`
- * **PopupContainer** - container that renders to portal and has logic to reposition
-   * `anchor`: `top | bottom | left | right`
-   * `as`: `React$ElementType` - Defaults to `div`. Container's root element.
-   * `children`: `({ close, contextClientRect, left, top, }) => React$Node`
-   * `className`: `string`
-   * `contextRef`: `Element` - Reference to the popup context from the provider.
-   * `closePopup`: `ClosePopup` - Close popup callback function.
-   * `offset`: `number` - Offset in pixels from the anchored position
-   * `root`: `HTMLElement` - Portal element, defaults to `<body>`
-   * `scrollableParents`: `Array<Element>` - List of scrollable parents from the provider.
-   * `shouldCenterToContext`: `boolean` - Shows the popup center to the context, if true.  Defaults to false.
-   * `style`: `{ [string]: any }`
+ * `anchor`: `top | bottom | left | right`
+ * `animation`: `React$ElementType` - defaults to `Tada` effect. Which is just show when `isOpen` is `true`.
+ * `children`: `({ close, left, top }) => React$Node`
+ * `className`: `string`
+ * `close`: `() => void` - Close function callback.
+ * `context`: `({ close, contextRef, isOpen, open, scrollableParents }) => React$Node`
+ * `offset`: `number` - Offset in pixels from the anchored position
+ * `shouldCenterToContext`: `boolean` - Shows the popup center to the context, if true.  Defaults to false.
