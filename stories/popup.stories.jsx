@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { storiesOf } from '@storybook/react';
 import { Popup } from '../src';
 import { Appear } from './modal.stories';
@@ -10,6 +10,22 @@ const MyPopup = () => (
 		My popup
 	</div>
 );
+
+const ControlledPopup = () => {
+  const [isOpen, setOpen] = useState(true);
+  return (
+    <>
+      <button onClick={() => setOpen(!isOpen)}>Toggle</button>
+      <Popup
+        animation={Appear}
+        context={({ contextRef }) => <div ref={contextRef}>Placeholder</div>}
+        isOpen={isOpen}
+      >
+        {MyPopup}
+      </Popup>
+    </>
+  )
+};
 
 storiesOf('Popup', module)
   .add('blank', () => <div />)
@@ -27,4 +43,5 @@ storiesOf('Popup', module)
     >
       {MyPopup}
     </Popup>
-  ));
+  ))
+  .add('controlled', () => <ControlledPopup />);

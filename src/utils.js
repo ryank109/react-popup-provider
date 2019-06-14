@@ -119,34 +119,3 @@ export function getPopupPosition(
     };
   }
 }
-
-export function getScrollableParent(elem: Element): ?Element {
-  const overflowY = window.getComputedStyle(elem).overflowY;
-  const isScrollable = overflowY !== 'visible' && overflowY !== 'hidden';
-  if (isScrollable && elem.scrollHeight >= elem.clientHeight) {
-    return elem;
-  } else {
-    return elem.parentElement
-      ? getScrollableParent(elem.parentElement)
-      : null;
-  }
-}
-
-export function getAllScrollableParents(fromElem: Element): Array<Element> {
-  const scrollableParents = [];
-  let parentElem = fromElem.parentElement;
-  while (parentElem) {
-    parentElem = getScrollableParent(parentElem);
-    if (parentElem) {
-      scrollableParents.push(parentElem);
-      parentElem = parentElem.parentElement;
-    }
-  }
-  return scrollableParents;
-}
-
-export function getRandomId(): string {
-  return process.env.NODE_ENV === 'test'
-    ? 'test_id'
-    : Math.random().toString(36).substr(2);
-}

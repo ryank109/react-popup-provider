@@ -10,7 +10,6 @@ export type ProviderValue = {
   contextRef: ContextRef,
   isOpen: boolean,
   open: GenericFunc,
-  scrollableParents: Array<Element>,
 };
 
 export type AnimationProps = {
@@ -32,9 +31,9 @@ export type ContainerProps = {
   className?: string,
   close: GenericFunc,
   contextRef: ContextRef,
+  isOpen: boolean,
   offset: number,
   root: HTMLElement,
-  scrollableParents: Array<Element>,
   shouldCenterToContext: boolean,
   style?: { [string]: any },
 };
@@ -46,7 +45,10 @@ export type BaseProps = {
   className?: string,
   container: React$ElementType,
   context: ProviderValue => React$Node,
+  isOpen?: boolean,
   offset: number,
+  overlay?: ({ isOpen: boolean }) => React$Node,
+  root: HTMLElement,
   shouldCenterToContext: boolean,
   style?: { [string]: any },
 };

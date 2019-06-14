@@ -1,12 +1,13 @@
 // @flow
-import React from 'react';
+import React, { Fragment } from 'react';
+import { createPortal } from 'react-dom';
 import { Consumer, PopupProvider } from './provider';
 import Tada from './tada';
 
 import type { BaseProps } from './types';
 
 const Base = (props: BaseProps) => (
-  <PopupProvider>
+  <PopupProvider isOpen={props.isOpen}>
     <Consumer>
       {props.context}
     </Consumer>
@@ -15,21 +16,24 @@ const Base = (props: BaseProps) => (
         close,
         contextRef,
         isOpen,
-        scrollableParents,
       }) => (
-        <props.animation isOpen={isOpen}>
-          <props.container
-            anchor={props.anchor}
-            className={props.className}
-            contextRef={contextRef}
-            close={close}
-            offset={props.offset}
-            scrollableParents={scrollableParents}
-            shouldCenterToContext={props.shouldCenterToContext}
-          >
-            {props.children}
-          </props.container>
-        </props.animation>
+        <Fragment>
+          {props.overlay && createPortal(props.overlay({ isOpen }), props.root)}
+          <props.animation isOpen={isOpen}>
+            <props.container
+              anchor={props.anchor}
+              className={props.className}
+              contextRef={contextRef}
+              close={close}
+              isOpen={isOpen}
+              offset={props.offset}
+              root={props.root}
+              shouldCenterToContext={props.shouldCenterToContext}
+            >
+              {props.children}
+            </props.container>
+          </props.animation>
+        </Fragment>
       )}
     </Consumer>
   </PopupProvider>
@@ -37,6 +41,7 @@ const Base = (props: BaseProps) => (
 
 Base.defaultProps = {
   animation: Tada,
+  root: document.body || document.createElement('div'),
 };
 
 Base.displayName = 'PopupBase';

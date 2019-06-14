@@ -4,7 +4,6 @@ import React, {
   createRef,
   PureComponent,
 } from 'react';
-import { getAllScrollableParents } from './utils';
 
 import type {
   GenericFunc,
@@ -13,6 +12,7 @@ import type {
 
 type PopupProps = {
   children: React$Node,
+  isOpen?: boolean
 };
 
 const noop = () => {};
@@ -34,27 +34,29 @@ class PopupProvider extends PureComponent<PopupProps, ProviderValue> {
     super(props);
 
     this.close = () => {
-      this.setState({ isOpen: false });
+      if (this.props.isOpen === undefined) {
+        this.setState({ isOpen: false });
+      }
     };
 
     this.open = () => {
-      this.setState(({ contextRef }) => {
-        const elem = contextRef && contextRef.current;
-        const scrollableParents = elem ? getAllScrollableParents(elem) : [];
-        return {
-          isOpen: true,
-          scrollableParents,
-        };
-      });
+      if (this.props.isOpen === undefined) {
+        this.setState({ isOpen: true });
+      }
     };
 
     this.state = {
       close: this.close,
       contextRef: createRef(),
-      isOpen: false,
+      isOpen: props.isOpen === undefined ? false : props.isOpen,
       open: this.open,
-      scrollableParents: [],
     };
+  }
+
+  componentDidUpdate(prevProps: PopupProps) {
+    if (prevProps.isOpen !== this.props.isOpen) {
+      this.setState({ isOpen: this.props.isOpen });
+    }
   }
 
   render() {

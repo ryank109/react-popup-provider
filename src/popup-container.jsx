@@ -1,6 +1,7 @@
 // @flow
 import React, { Component } from 'react';
 import { createPortal } from 'react-dom';
+import observeRect from '@reach/observe-rect';
 import { getPopupPosition } from './utils';
 
 import type { ContainerProps } from './types';
@@ -32,6 +33,10 @@ export default class PopupContainer extends Component<ContainerProps, PopupConta
 
   el: ?HTMLElement;
   focusOut: Function;
+  observer: {
+    observe: Function,
+    unobserve: Function,
+  };
   setRef: Function;
   updatePosition: Function;
 
@@ -92,18 +97,15 @@ export default class PopupContainer extends Component<ContainerProps, PopupConta
   }
 
   componentDidMount() {
-    this.computeAndSetPosition();
+    const { contextRef: { current } } = this.props;
+    this.observer = observeRect(current, () => this.computeAndSetPosition());
+    this.observer.observe();
     window.addEventListener('mousedown', this.focusOut);
-    window.addEventListener('resize', this.updatePosition);
-    this.props.scrollableParents.forEach(
-      parentElem => parentElem.addEventListener('scroll', this.updatePosition));
   }
 
   componentWillUnmount() {
     window.removeEventListener('mousedown', this.focusOut);
-    window.removeEventListener('resize', this.updatePosition);
-    this.props.scrollableParents.forEach(
-      parentElem => parentElem.removeEventListener('scroll', this.updatePosition));
+    this.observer.unobserve();
   }
 
   render() {
