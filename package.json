@@ -28,29 +28,33 @@
   },
   "homepage": "https://github.com/ryank109/react-popup-provider#readme",
   "devDependencies": {
-    "@babel/cli": "^7.1.2",
-    "@babel/core": "^7.1.2",
-    "@babel/preset-env": "^7.1.0",
+    "@babel/cli": "^7.4.4",
+    "@babel/core": "^7.4.5",
+    "@babel/preset-env": "^7.4.5",
     "@babel/preset-flow": "^7.0.0",
     "@babel/preset-react": "^7.0.0",
-    "@storybook/react": "^5.0.6",
+    "@emotion/core": "^10.0.10",
+    "@emotion/styled": "^10.0.12",
+    "@storybook/react": "^5.1.8",
     "babel-core": "^7.0.0-bridge.0",
     "babel-eslint": "^10.0.1",
-    "babel-loader": "^8.0.4",
-    "eslint": "^5.6.1",
+    "babel-loader": "^8.0.6",
+    "eslint": "^5.16.0",
     "eslint-plugin-flowtype": "^2.50.3",
-    "flow-bin": "^0.81.0",
-    "flow-copy-source": "^2.0.2",
+    "flow-bin": "^0.101.0",
+    "flow-copy-source": "^2.0.6",
     "jest": "^23.6.0",
     "jest-junit": "^5.1.0",
-    "react-spring": "^8.0.19",
-    "react-test-renderer": "^16.5.2",
-    "webpack": "^4.20.2",
-    "webpack-cli": "^3.1.1",
-    "webpack-dev-server": "^3.1.9"
+    "react": "^16.8.6",
+    "react-dom": "^16.8.6",
+    "react-spring": "^8.0.25",
+    "react-test-renderer": "^16.8.6"
   },
   "peerDependencies": {
     "react": ">=16.3.0",
     "react-dom": ">=16.3.0"
+  },
+  "dependencies": {
+    "react-focus-lock": "^1.19.1"
   }
 }

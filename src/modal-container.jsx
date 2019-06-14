@@ -1,6 +1,7 @@
 // @flow
 import React, { createRef, Component } from 'react';
 import { createPortal } from 'react-dom';
+import FocusLock from 'react-focus-lock';
 
 import type {
   ContainerProps,
@@ -72,13 +73,15 @@ export default class ModalContainer extends Component<ContainerProps, ModalConta
       ...style,
     };
     return createPortal(
-      <ContainerComponent
-        className={className}
-        ref={this.ref}
-        style={containerStyle}
-      >
-        {children({ close, left, top })}
-      </ContainerComponent>,
+      <FocusLock>
+        <ContainerComponent
+          className={className}
+          ref={this.ref}
+          style={containerStyle}
+        >
+          {children({ close, left, top })}
+        </ContainerComponent>
+      </FocusLock>,
       root,
     );
   }
