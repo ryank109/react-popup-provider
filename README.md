@@ -83,6 +83,7 @@ const Appear = ({ children, isOpen }) => (
  * `className`: `string`
  * `close`: `() => void` - Close function callback.
  * `context`: `({ close, contextRef, isOpen, open, scrollableParents }) => React$Node`
+ * `isOpen`: `boolean` - if you need controlled open state, then use this
  * `overlay`: `({ isOpen }) => React$Node` - optional overlay element that renders to `root`.  Use this if you want to control overlay's animation that doesn't get affected by the modal's animation
  * `root`: `HTMLElement` - defaults to `document.body`.  This is where the portal is created.
  * `style`: `object` - optional styles for the modal container
@@ -95,6 +96,7 @@ const Appear = ({ children, isOpen }) => (
  * `className`: `string`
  * `close`: `() => void` - Close function callback.
  * `context`: `({ close, contextRef, isOpen, open, scrollableParents }) => React$Node`
+ * `isOpen`: `boolean` - if you need controlled open state, then use this
  * `offset`: `number` - Offset in pixels from the anchored position
  * `root`: `HTMLElement` - defaults to `document.body`.  This is where the portal is created.
  * `shouldCenterToContext`: `boolean` - Shows the popup center to the context, if true.  Defaults to false.
